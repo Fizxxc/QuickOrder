@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - QuickOrder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            min-height: 100vh;
+            color: white;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .status-pending { border-left: 5px solid #f39c12; }
+        .status-preparing { border-left: 5px solid #3498db; }
+        .status-ready { border-left: 5px solid #27ae60; }
+        .status-completed { border-left: 5px solid #95a5a6; }
+    </style>
+</head>
+<body>
+    <div class="row g-0">
+        <div class="col-md-3">
+            <div class="sidebar p-3">
+                <h4 class="mb-4">
+                    <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+                </h4>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link active" href="#orders" data-bs-toggle="pill">
+                            <i class="fas fa-shopping-cart me-2"></i>Pesanan
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="#queue" data-bs-toggle="pill">
+                            <i class="fas fa-clock me-2"></i>Antrian
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="/chat">
+                            <i class="fas fa-comments me-2"></i>Live Chat
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <button class="btn btn-outline-light w-100" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="container-fluid p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Dashboard Admin</h2>
+                    <span class="badge bg-success fs-6" id="adminInfo">Admin Panel</span>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="totalOrders">0</h3>
+                            <p class="mb-0">Total Pesanan</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="pendingOrders">0</h3>
+                            <p class="mb-0">Pesanan Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="todayRevenue">Rp 0</h3>
+                            <p class="mb-0">Pendapatan Hari Ini</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <h3 id="activeQueue">0</h3>
+                            <p class="mb-0">Antrian Aktif</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="orders">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4>Kelola Pesanan</h4>
+                            <button class="btn btn-primary" onclick="refreshOrders()">
+                                <i class="fas fa-sync-alt me-2"></i>Refresh
+                            </button>
+                        </div>
+                        <div id="ordersContainer">
+                            <!-- Orders akan dimuat di sini -->
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="queue">
+                        <h4>Manajemen Antrian</h4>
+                        <div id="queueContainer">
+                            <!-- Queue akan dimuat di sini -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+      apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
+      authDomain: "order-proj.firebaseapp.com",
+      projectId: "order-proj",
+      storageBucket: "order-proj.firebasestorage.app",
+      messagingSenderId: "235438844119",
+      appId: "1:235438844119:web:48c6c5fc53da46bbc26892",
+      measurementId: "G-ES8YZMS72L"
+    };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allOrders = [];
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('adminInfo').textContent = `Admin: ${user.displayName || user.email}`;
+                loadOrders();
+            } else {
+                window.location.href = '/login';
+            }
+        });
+
+        function loadOrders() {
+            const q = query(collection(db, 'orders'), orderBy('orderTime', 'desc'));
+            
+            onSnapshot(q, (snapshot) => {
+                allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                displayOrders();
+                updateStats();
+            });
+        }
+
+        function displayOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '';
+
+            if (allOrders.length === 0) {
+                container.innerHTML = '<p class="text-muted">Belum ada pesanan</p>';
+                return;
+            }
+
+            allOrders.forEach(order => {
+                const orderTime = order.orderTime?.toDate?.() || new Date(order.orderTime);
+                const statusColor = {
+                    'pending': 'warning',
+                    'preparing': 'info',
+                    'ready': 'success',
+                    'completed': 'secondary'
+                };
+
+                const orderCard = `
+                    <div class="order-card status-${order.status} p-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">Pesanan #${order.queueNumber} - ${order.userName}</h6>
+                                <small class="text-muted">${orderTime.toLocaleString()}</small>
+                                <div class="mt-2">
+                                    ${order.items.map(item => `
+                                        <span class="badge bg-light text-dark me-1">
+                                            ${item.name} (${item.quantity}x)
+                                        </span>
+                                    `).join('')}
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Total: Rp ${order.total.toLocaleString()}</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="badge bg-${statusColor[order.status]} mb-2">${order.status.toUpperCase()}</span><br>
+                                <div class="btn-group-vertical">
+                                    ${order.status === 'pending' ? `
+                                        <button class="btn btn-sm btn-info mb-1" onclick="updateOrderStatus('${order.id}', 'preparing')">
+                                            Mulai Persiapan
+                                        </button>
+                                    ` : ''}
+                                    ${order.status === 'preparing' ? `
+                                        <button class="btn btn-sm btn-success mb-1" onclick="updateOrderStatus('${order.id}', 'ready')">
+                                            Siap Diambil
+                                        </button>
+                                    ` : ''}
+                                    ${order.status === 'ready' ? `
+                                        <button class="btn btn-sm btn-secondary mb-1" onclick="updateOrderStatus('${order.id}', 'completed')">
+                                            Selesai
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += orderCard;
+            });
+        }
+
+        window.updateOrderStatus = async function(orderId, newStatus) {
+            try {
+                await updateDoc(doc(db, 'orders', orderId), {
+                    status: newStatus,
+                    updatedAt: new Date()
+                });
+                console.log('Status updated successfully');
+            } catch (error) {
+                alert('Error updating status: ' + error.message);
+            }
+        };
+
+        function updateStats() {
+            const total = allOrders.length;
+            const pending = allOrders.filter(order => order.status === 'pending').length;
+            const today = new Date().toDateString();
+            const todayOrders = allOrders.filter(order => {
+                const orderDate = order.orderTime?.toDate?.() || new Date(order.orderTime);
+                return orderDate.toDateString() === today;
+            });
+            const todayRevenue = todayOrders.reduce((sum, order) => sum + order.total, 0);
+            const activeQueue = allOrders.filter(order => 
+                order.status === 'pending' || order.status === 'preparing'
+            ).length;
+
+            document.getElementById('totalOrders').textContent = total;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('todayRevenue').textContent = `Rp ${todayRevenue.toLocaleString()}`;
+            document.getElementById('activeQueue').textContent = activeQueue;
+        }
+
+        window.refreshOrders = function() {
+            loadOrders();
+        };
+
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = '/';
+            } catch (error) {
+                alert('Error logout: ' + error.message);
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

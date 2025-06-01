@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin-dashboard.html"
+    },
+    {
+      "src": "/user",
+      "dest": "/user.html"
+    },
+    {
+      "src": "/chat",
+      "dest": "/live-chat.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/register",
+      "dest": "/register.html"
+    },
+    {
+      "src": "/order",
+      "dest": "/order.html"
+    }
+  ],
+  "functions": {
+    "api/live-chat.js": {
+      "maxDuration": 10
+    },
+    "api/admin.js": {
+      "maxDuration": 15
+    },
+    "api/order.js": {
+      "maxDuration": 10
+    }
+  }
+}
