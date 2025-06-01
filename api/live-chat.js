@@ -1,6 +1,6 @@
 // API untuk live chat real-time
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
     import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js";
 
 const firebaseConfig = {
@@ -21,7 +21,7 @@ const db = getFirestore(app);
       provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'),
       isTokenAutoRefreshEnabled: true
     });
-    
+
 export class LiveChatAPI {
     // Mengirim pesan
     static async sendMessage(messageData) {
