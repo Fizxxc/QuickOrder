@@ -1,4 +1,4 @@
-// api/order.js
+// api.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
 import {
     getFirestore,
@@ -15,7 +15,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js';
 
-// Firebase Config
+// Konfigurasi Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
     authDomain: "order-proj.firebaseapp.com",
@@ -26,16 +26,15 @@ const firebaseConfig = {
     measurementId: "G-ES8YZMS72L"
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// App Check
 initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'),
     isTokenAutoRefreshEnabled: true
 });
 
+// Kelas untuk Order
 export class OrderAPI {
     static async createOrder(orderData) {
         try {
@@ -157,6 +156,131 @@ export class OrderAPI {
             };
 
             return { success: true, data: stats };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+}
+
+// Kelas untuk Menu
+export class MenuAPI {
+    static defaultMenuItems = [
+        {
+            name: "Nasi Goreng Spesial",
+            price: 25000,
+            category: "Nasi",
+            description: "Nasi goreng dengan telur, ayam, dan sayuran segar",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        },
+        {
+            name: "Mie Ayam Bakso",
+            price: 20000,
+            category: "Mie",
+            description: "Mie ayam dengan bakso dan pangsit goreng",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        },
+        {
+            name: "Gado-gado",
+            price: 18000,
+            category: "Sayuran",
+            description: "Sayuran segar dengan bumbu kacang khas",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        },
+        {
+            name: "Ayam Bakar",
+            price: 30000,
+            category: "Ayam",
+            description: "Ayam bakar bumbu kecap dengan lalapan",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        },
+        {
+            name: "Soto Ayam",
+            price: 22000,
+            category: "Soto",
+            description: "Soto ayam dengan kuah bening dan pelengkap",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        },
+        {
+            name: "Es Teh Manis",
+            price: 5000,
+            category: "Minuman",
+            description: "Es teh manis segar",
+            image: "https://via.placeholder.com/300x200",
+            isAvailable: true
+        }
+    ];
+
+    static async initializeDefaultMenu() {
+        try {
+            const menuSnapshot = await getDocs(collection(db, 'menu'));
+            if (menuSnapshot.empty) {
+                for (const item of this.defaultMenuItems) {
+                    await addDoc(collection(db, 'menu'), {
+                        ...item,
+                        createdAt: new Date()
+                    });
+                }
+                return { success: true, message: 'Menu default berhasil diinisialisasi' };
+            }
+            return { success: true, message: 'Menu sudah ada' };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    static async addMenuItem(menuData) {
+        try {
+            const newItem = {
+                ...menuData,
+                createdAt: new Date(),
+                isAvailable: true
+            };
+            const docRef = await addDoc(collection(db, 'menu'), newItem);
+            return { success: true, itemId: docRef.id, message: 'Item menu berhasil ditambahkan' };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    static async getAllMenuItems() {
+        try {
+            const querySnapshot = await getDocs(collection(db, 'menu'));
+            const menuItems = [];
+            querySnapshot.forEach((doc) => {
+                menuItems.push({ id: doc.id, ...doc.data() });
+            });
+            return { success: true, data: menuItems };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    static subscribeToMenu(callback) {
+        const q = query(collection(db, 'menu'));
+        return onSnapshot(q, snapshot => {
+            const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            callback(items);
+        });
+    }
+
+    static async updateMenuItem(itemId, updates) {
+        try {
+            await updateDoc(doc(db, 'menu', itemId), updates);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    static async deleteMenuItem(itemId) {
+        try {
+            await deleteDoc(doc(db, 'menu', itemId));
+            return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
         }
