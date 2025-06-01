@@ -1,8 +1,10 @@
 // API untuk dashboard admin dan manajemen sistem
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy } from 'firebase/firestore';
-
+// cek
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, deleteDoc, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js";
+// --
  const firebaseConfig = {
       apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
       authDomain: "order-proj.firebaseapp.com",
@@ -17,6 +19,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+  const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'),
+      isTokenAutoRefreshEnabled: true
+    });
+    
 export class AdminAPI {
     // Login admin
     static async loginAdmin(email, password) {

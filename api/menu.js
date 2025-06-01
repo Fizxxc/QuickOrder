@@ -1,6 +1,8 @@
 // Menu load and display logic// API untuk mengelola menu makanan
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+// import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, collection, addDoc, onSnapshot, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js";
 
  const firebaseConfig = {
       apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
@@ -15,6 +17,12 @@ import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, o
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
+  const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'),
+      isTokenAutoRefreshEnabled: true
+    });
+    
 export class MenuAPI {
     // Data menu default
     static defaultMenuItems = [
