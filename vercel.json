@@ -43,16 +43,5 @@
       "src": "/order",
       "dest": "/order.html"
     }
-  ],
-  "functions": {
-    "api/live-chat.js": {
-      "maxDuration": 10
-    },
-    "api/admin.js": {
-      "maxDuration": 15
-    },
-    "api/order.js": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
