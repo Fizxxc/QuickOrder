@@ -1,15 +1,16 @@
 // Menu load and display logic// API untuk mengelola menu makanan
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
-    // Konfigurasi Firebase Anda
-    apiKey: "your-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
+    authDomain: "order-proj.firebaseapp.com",
+    projectId: "order-proj",
+    storageBucket: "order-proj.firebasestorage.app",
+    messagingSenderId: "235438844119",
+    appId: "1:235438844119:web:48c6c5fc53da46bbc26892",
+    measurementId: "G-ES8YZMS72L"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -72,7 +73,7 @@ export class MenuAPI {
     static async initializeDefaultMenu() {
         try {
             const menuSnapshot = await getDocs(collection(db, 'menu'));
-            
+
             if (menuSnapshot.empty) {
                 for (const item of this.defaultMenuItems) {
                     await addDoc(collection(db, 'menu'), {
@@ -80,13 +81,13 @@ export class MenuAPI {
                         createdAt: new Date()
                     });
                 }
-                
+
                 return {
                     success: true,
                     message: 'Menu default berhasil diinisialisasi'
                 };
             }
-            
+
             return {
                 success: true,
                 message: 'Menu sudah ada'
@@ -109,7 +110,7 @@ export class MenuAPI {
             };
 
             const docRef = await addDoc(collection(db, 'menu'), newItem);
-            
+
             return {
                 success: true,
                 itemId: docRef.id,
@@ -128,7 +129,7 @@ export class MenuAPI {
         try {
             const querySnapshot = await getDocs(collection(db, 'menu'));
             const menuItems = [];
-            
+
             querySnapshot.forEach((doc) => {
                 menuItems.push({ id: doc.id, ...doc.data() });
             });
@@ -149,12 +150,12 @@ export class MenuAPI {
     static async getMenuByCategory(category) {
         try {
             const allMenu = await this.getAllMenuItems();
-            
+
             if (!allMenu.success) {
                 throw new Error(allMenu.error);
             }
 
-            const filteredMenu = allMenu.data.filter(item => 
+            const filteredMenu = allMenu.data.filter(item =>
                 item.category.toLowerCase() === category.toLowerCase()
             );
 
@@ -214,7 +215,7 @@ export class MenuAPI {
     static async deleteMenuItem(itemId) {
         try {
             await deleteDoc(doc(db, 'menu', itemId));
-            
+
             return {
                 success: true,
                 message: 'Item menu berhasil dihapus'
@@ -242,7 +243,7 @@ export class MenuAPI {
     static async getCategories() {
         try {
             const allMenu = await this.getAllMenuItems();
-            
+
             if (!allMenu.success) {
                 throw new Error(allMenu.error);
             }
@@ -265,12 +266,12 @@ export class MenuAPI {
     static async searchMenu(searchTerm) {
         try {
             const allMenu = await this.getAllMenuItems();
-            
+
             if (!allMenu.success) {
                 throw new Error(allMenu.error);
             }
 
-            const filteredMenu = allMenu.data.filter(item => 
+            const filteredMenu = allMenu.data.filter(item =>
                 item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.description.toLowerCase().includes(searchTerm.toLowerCase())
             );
@@ -287,3 +288,9 @@ export class MenuAPI {
         }
     }
 }
+
+// Inisialisasi App Check dengan ReCaptchaV3Provider
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
+      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
+    });

@@ -1,15 +1,16 @@
 // API untuk live chat real-time
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, where } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
-    // Konfigurasi Firebase Anda
-    apiKey: "your-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
+    authDomain: "order-proj.firebaseapp.com",
+    projectId: "order-proj",
+    storageBucket: "order-proj.firebasestorage.app",
+    messagingSenderId: "235438844119",
+    appId: "1:235438844119:web:48c6c5fc53da46bbc26892",
+    measurementId: "G-ES8YZMS72L"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -26,7 +27,7 @@ export class LiveChatAPI {
             };
 
             const docRef = await addDoc(collection(db, 'messages'), newMessage);
-            
+
             return {
                 success: true,
                 messageId: docRef.id,
@@ -43,7 +44,7 @@ export class LiveChatAPI {
     // Subscribe ke pesan real-time
     static subscribeToMessages(callback, roomId = null) {
         let q;
-        
+
         if (roomId) {
             q = query(
                 collection(db, 'messages'),
@@ -61,8 +62,8 @@ export class LiveChatAPI {
             const messages = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                messages.push({ 
-                    id: doc.id, 
+                messages.push({
+                    id: doc.id,
                     ...data,
                     timestamp: data.timestamp?.toDate() || new Date()
                 });
@@ -84,7 +85,7 @@ export class LiveChatAPI {
             };
 
             const docRef = await addDoc(collection(db, 'chatRooms'), roomData);
-            
+
             // Kirim pesan pembuka otomatis
             await this.sendMessage({
                 roomId: docRef.id,
@@ -150,8 +151,8 @@ export class LiveChatAPI {
             const rooms = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                rooms.push({ 
-                    id: doc.id, 
+                rooms.push({
+                    id: doc.id,
                     ...data,
                     createdAt: data.createdAt?.toDate() || new Date(),
                     lastActivity: data.lastActivity?.toDate() || new Date()
@@ -237,11 +238,11 @@ export class LiveChatAPI {
 
             const querySnapshot = await getDocs(q);
             const messages = [];
-            
+
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                messages.push({ 
-                    id: doc.id, 
+                messages.push({
+                    id: doc.id,
                     ...data,
                     timestamp: data.timestamp?.toDate() || new Date()
                 });
@@ -279,3 +280,9 @@ export class LiveChatAPI {
         }
     }
 }
+
+// Inisialisasi App Check dengan ReCaptchaV3Provider
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
+      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
+    });

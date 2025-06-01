@@ -1,127 +1,140 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Chat - QuickOrder</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            overflow: hidden;
-        }
-        .chat-container {
-            background: white;
-            border-radius: 15px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-        .chat-header {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
-            color: white;
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            max-height: 60vh;
-        }
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-        }
-        .message.sent {
-            justify-content: flex-end;
-        }
-        .message.received {
-            justify-content: flex-start;
-        }
-        .message-bubble {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 20px;
-            position: relative;
-        }
-        .message.sent .message-bubble {
-            background: linear-gradient(135deg, #ff6b6b, #ffa500);
-            color: white;
-        }
-        .message.received .message-bubble {
-            background: #f8f9fa;
-            color: #333;
-        }
-        .chat-input {
-            border-top: 1px solid #dee2e6;
-            padding: 20px;
-        }
-        .online-indicator {
-            width: 10px;
-            height: 10px;
-            background: #27ae60;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Chat - QuickOrder</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .chat-container {
+      background: white;
+      border-radius: 15px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      color: white;
+      padding: 20px;
+      border-radius: 15px 15px 0 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      max-height: 60vh;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+    }
+
+    .message.sent {
+      justify-content: flex-end;
+    }
+
+    .message.received {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .message.sent .message-bubble {
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      color: white;
+    }
+
+    .message.received .message-bubble {
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .chat-input {
+      border-top: 1px solid #dee2e6;
+      padding: 20px;
+    }
+
+    .online-indicator {
+      width: 10px;
+      height: 10px;
+      background: #27ae60;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 5px;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container mt-3">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-0">Live Chat Support</h5>
-                                <small>Customer Service <span class="online-indicator"></span></small>
-                            </div>
-                            <div>
-                                <a href="/order" class="btn btn-outline-light btn-sm me-2">
-                                    <i class="fas fa-arrow-left"></i>
-                                </a>
-                                <button class="btn btn-outline-light btn-sm" onclick="clearChat()">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message received">
-                            <div class="message-bubble">
-                                <strong>Admin</strong><br>
-                                Selamat datang di QuickOrder! Ada yang bisa kami bantu?
-                                <br><small class="text-muted">Baru saja</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="chat-input">
-                        <form id="chatForm" class="d-flex gap-2">
-                            <input type="text" class="form-control" id="messageInput" 
-                                   placeholder="Ketik pesan Anda..." required>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+  <div class="container mt-3">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="chat-container">
+          <div class="chat-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-0">Live Chat Support</h5>
+                <small>Customer Service <span class="online-indicator"></span></small>
+              </div>
+              <div>
+                <a href="/order" class="btn btn-outline-light btn-sm me-2">
+                  <i class="fas fa-arrow-left"></i>
+                </a>
+                <button class="btn btn-outline-light btn-sm" onclick="clearChat()">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
             </div>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="message received">
+              <div class="message-bubble">
+                <strong>Admin</strong><br>
+                Selamat datang di QuickOrder! Ada yang bisa kami bantu?
+                <br><small class="text-muted">Baru saja</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input">
+            <form id="chatForm" class="d-flex gap-2">
+              <input type="text" class="form-control" id="messageInput" placeholder="Ketik pesan Anda..." required>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
-        const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
       authDomain: "order-proj.firebaseapp.com",
       projectId: "order-proj",
@@ -131,106 +144,106 @@
       measurementId: "G-ES8YZMS72L"
     };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        let currentUser = null;
+    let currentUser = null;
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                loadMessages();
-            } else {
-                window.location.href = '/user';
-            }
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        loadMessages();
+      } else {
+        window.location.href = '/user';
+      }
+    });
+
+    function loadMessages() {
+      const q = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
+
+      onSnapshot(q, (snapshot) => {
+        const messagesContainer = document.getElementById('chatMessages');
+        // Simpan pesan admin yang sudah ada
+        const adminMessage = messagesContainer.firstElementChild;
+        messagesContainer.innerHTML = '';
+        messagesContainer.appendChild(adminMessage);
+
+        snapshot.docs.forEach(doc => {
+          const message = doc.data();
+          displayMessage(message);
         });
 
-        function loadMessages() {
-            const q = query(collection(db, 'messages'), orderBy('timestamp', 'asc'));
-            
-            onSnapshot(q, (snapshot) => {
-                const messagesContainer = document.getElementById('chatMessages');
-                // Simpan pesan admin yang sudah ada
-                const adminMessage = messagesContainer.firstElementChild;
-                messagesContainer.innerHTML = '';
-                messagesContainer.appendChild(adminMessage);
+        // Auto scroll ke bawah
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      });
+    }
 
-                snapshot.docs.forEach(doc => {
-                    const message = doc.data();
-                    displayMessage(message);
-                });
+    function displayMessage(message) {
+      const messagesContainer = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
 
-                // Auto scroll ke bawah
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
-        }
+      const timestamp = message.timestamp?.toDate?.() || new Date();
 
-        function displayMessage(message) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.senderId === currentUser.uid ? 'sent' : 'received'}`;
-            
-            const timestamp = message.timestamp?.toDate?.() || new Date();
-            
-            messageDiv.innerHTML = `
+      messageDiv.innerHTML = `
                 <div class="message-bubble">
                     <strong>${message.senderName}</strong><br>
                     ${message.text}
                     <br><small class="text-muted">${timestamp.toLocaleTimeString()}</small>
                 </div>
             `;
-            
-            messagesContainer.appendChild(messageDiv);
-        }
 
-        document.getElementById('chatForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const messageInput = document.getElementById('messageInput');
-            const text = messageInput.value.trim();
-            
-            if (!text) return;
+      messagesContainer.appendChild(messageDiv);
+    }
 
-            try {
-                await addDoc(collection(db, 'messages'), {
-                    text: text,
-                    senderId: currentUser.uid,
-                    senderName: currentUser.displayName || currentUser.email,
-                    timestamp: serverTimestamp(),
-                    type: 'user'
-                });
+    document.getElementById('chatForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const messageInput = document.getElementById('messageInput');
+      const text = messageInput.value.trim();
 
-                messageInput.value = '';
+      if (!text) return;
 
-                // Simulasi respon otomatis admin (untuk demo)
-                setTimeout(async () => {
-                    const responses = [
-                        "Terima kasih atas pertanyaan Anda. Kami akan segera membantu.",
-                        "Mohon tunggu sebentar, kami sedang memeriksa pesanan Anda.",
-                        "Apakah ada hal lain yang bisa kami bantu?",
-                        "Pesanan Anda sedang dalam proses persiapan."
-                    ];
-                    
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    
-                    await addDoc(collection(db, 'messages'), {
-                        text: randomResponse,
-                        senderId: 'admin',
-                        senderName: 'Admin',
-                        timestamp: serverTimestamp(),
-                        type: 'admin'
-                    });
-                }, 2000);
-
-            } catch (error) {
-                alert('Error mengirim pesan: ' + error.message);
-            }
+      try {
+        await addDoc(collection(db, 'messages'), {
+          text: text,
+          senderId: currentUser.uid,
+          senderName: currentUser.displayName || currentUser.email,
+          timestamp: serverTimestamp(),
+          type: 'user'
         });
 
-        window.clearChat = function() {
-            if (confirm('Hapus riwayat chat?')) {
-                const messagesContainer = document.getElementById('chatMessages');
-                messagesContainer.innerHTML = `
+        messageInput.value = '';
+
+        // Simulasi respon otomatis admin (untuk demo)
+        setTimeout(async () => {
+          const responses = [
+            "Terima kasih atas pertanyaan Anda. Kami akan segera membantu.",
+            "Mohon tunggu sebentar, kami sedang memeriksa pesanan Anda.",
+            "Apakah ada hal lain yang bisa kami bantu?",
+            "Pesanan Anda sedang dalam proses persiapan."
+          ];
+
+          const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+          await addDoc(collection(db, 'messages'), {
+            text: randomResponse,
+            senderId: 'admin',
+            senderName: 'Admin',
+            timestamp: serverTimestamp(),
+            type: 'admin'
+          });
+        }, 2000);
+
+      } catch (error) {
+        alert('Error mengirim pesan: ' + error.message);
+      }
+    });
+
+    window.clearChat = function () {
+      if (confirm('Hapus riwayat chat?')) {
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.innerHTML = `
                     <div class="message received">
                         <div class="message-bubble">
                             <strong>Admin</strong><br>
@@ -239,9 +252,15 @@
                         </div>
                     </div>
                 `;
-            }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      }
+    };
+    // Inisialisasi App Check dengan ReCaptchaV3Provider
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
+      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

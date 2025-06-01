@@ -1,15 +1,16 @@
 // API untuk mengelola pesanan dan antrian
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
-    // Konfigurasi Firebase Anda
-    apiKey: "your-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
+    authDomain: "order-proj.firebaseapp.com",
+    projectId: "order-proj",
+    storageBucket: "order-proj.firebasestorage.app",
+    messagingSenderId: "235438844119",
+    appId: "1:235438844119:web:48c6c5fc53da46bbc26892",
+    measurementId: "G-ES8YZMS72L"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -29,7 +30,7 @@ export class OrderAPI {
             };
 
             const docRef = await addDoc(collection(db, 'orders'), newOrder);
-            
+
             return {
                 success: true,
                 orderId: docRef.id,
@@ -59,7 +60,7 @@ export class OrderAPI {
             );
 
             const querySnapshot = await getDocs(q);
-            
+
             if (querySnapshot.empty) {
                 return 1;
             } else {
@@ -104,7 +105,7 @@ export class OrderAPI {
         try {
             const q = query(collection(db, 'orders'), orderBy('orderTime', 'desc'));
             const querySnapshot = await getDocs(q);
-            
+
             const orders = [];
             querySnapshot.forEach((doc) => {
                 orders.push({ id: doc.id, ...doc.data() });
@@ -130,10 +131,10 @@ export class OrderAPI {
                 where('userId', '==', userId),
                 orderBy('orderTime', 'desc')
             );
-            
+
             const querySnapshot = await getDocs(q);
             const orders = [];
-            
+
             querySnapshot.forEach((doc) => {
                 orders.push({ id: doc.id, ...doc.data() });
             });
@@ -153,7 +154,7 @@ export class OrderAPI {
     // Subscribe ke perubahan pesanan real-time
     static subscribeToOrders(callback) {
         const q = query(collection(db, 'orders'), orderBy('orderTime', 'desc'));
-        
+
         return onSnapshot(q, (querySnapshot) => {
             const orders = [];
             querySnapshot.forEach((doc) => {
@@ -183,7 +184,7 @@ export class OrderAPI {
     static async getOrderStats() {
         try {
             const orders = await this.getAllOrders();
-            
+
             if (!orders.success) {
                 throw new Error(orders.error);
             }
@@ -214,3 +215,9 @@ export class OrderAPI {
         }
     }
 }
+
+// Inisialisasi App Check dengan ReCaptchaV3Provider
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
+      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
+    });

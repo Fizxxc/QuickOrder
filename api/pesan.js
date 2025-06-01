@@ -1,15 +1,16 @@
 // API untuk mengelola pesan dan notifikasi
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, getDocs, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
-    // Konfigurasi Firebase Anda
-    apiKey: "your-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "your-app-id"
+    apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
+    authDomain: "order-proj.firebaseapp.com",
+    projectId: "order-proj",
+    storageBucket: "order-proj.firebasestorage.app",
+    messagingSenderId: "235438844119",
+    appId: "1:235438844119:web:48c6c5fc53da46bbc26892",
+    measurementId: "G-ES8YZMS72L"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -27,7 +28,7 @@ export class PesanAPI {
             };
 
             const docRef = await addDoc(collection(db, 'notifications'), newMessage);
-            
+
             return {
                 success: true,
                 messageId: docRef.id,
@@ -98,7 +99,7 @@ export class PesanAPI {
             );
 
             const promises = [];
-            
+
             usersSnapshot.forEach((doc) => {
                 const userData = doc.data();
                 promises.push(
@@ -140,7 +141,7 @@ export class PesanAPI {
             const querySnapshot = await getDocs(q);
             const notifications = [];
             let count = 0;
-            
+
             querySnapshot.forEach((doc) => {
                 if (count < limit) {
                     notifications.push({ id: doc.id, ...doc.data() });
@@ -236,7 +237,7 @@ export class PesanAPI {
     static async deleteNotification(notificationId) {
         try {
             await deleteDoc(doc(db, 'notifications', notificationId));
-            
+
             return {
                 success: true,
                 message: 'Notifikasi berhasil dihapus'
@@ -360,3 +361,9 @@ export class PesanAPI {
         }
     }
 }
+
+// Inisialisasi App Check dengan ReCaptchaV3Provider
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
+      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
+    });
