@@ -101,21 +101,9 @@
       </div>
     </div>
   </div>
+<script type="module" src="/js/menu.js"></script>
+<script type="module" src="/js/order.js"></script>
 
-  <script type="module" src="/js/order.js"></script>
-  <script type="module">
-  import { MenuAPI } from '/js/menu.js';
-
-  window.addEventListener('DOMContentLoaded', () => {
-    MenuAPI.displayAllMenuItems();
-  });
-
-  // Global addToCart agar dipakai tombol
-  window.addToCart = function (id, name, price) {
-    console.log(`Tambah ke keranjang: ${name} - Rp ${price}`);
-    // Panggil order.js kalau tersedia
-  };
-</script>
 
 </body>
 
