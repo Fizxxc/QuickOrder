@@ -1,7 +1,6 @@
 // API untuk live chat real-time
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, where } from 'firebase/firestore';
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBVzfZU-Kc4LyNC_6mOAzisn2jU1HRmqcM",
@@ -280,9 +279,3 @@ export class LiveChatAPI {
         }
     }
 }
-
-// Inisialisasi App Check dengan ReCaptchaV3Provider
-    initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider('6LeXz1ErAAAAAM7wIOqwa21yrxff_7EdxImLG2cv'), // reCAPTCHA v3 key dari Google
-      isTokenAutoRefreshEnabled: true // agar token diperbarui otomatis
-    });
