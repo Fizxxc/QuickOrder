@@ -38,6 +38,10 @@
     {
       "src": "/order",
       "dest": "/order.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
     }
   ]
 }
