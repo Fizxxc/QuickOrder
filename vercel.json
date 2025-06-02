@@ -32,7 +32,6 @@
     {
       "src": "/",
       "dest": "/index.html"
-    },
-    { "handle": "filesystem" }
+    }
   ]
 }
